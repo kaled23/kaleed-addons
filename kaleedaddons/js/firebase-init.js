@@ -7,5 +7,12 @@ const firebaseConfig = {
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.FIREBASE_APP_ID
 };
-firebase.initializeApp(firebaseConfig);
-console.log("تم تهيئة Firebase!");
+try {
+    firebase.initializeApp(firebaseConfig);
+    console.log("تم تهيئة Firebase بنجاح!");
+    firebase.firestore().collection('test').doc('check').set({ test: 'ok' })
+        .then(() => console.log("اختبار Firestore ناجح!"))
+        .catch(error => console.error("خطأ في اختبار Firestore:", error));
+} catch (error) {
+    console.error("خطأ في تهيئة Firebase:", error);
+}

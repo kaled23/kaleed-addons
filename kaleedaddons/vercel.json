@@ -4,6 +4,8 @@
     { "source": "/admin.html", "destination": "/admin.html" },
     { "source": "/addons", "destination": "/addons.html" },
     { "source": "/addons.html", "destination": "/addons.html" },
+    { "source": "/css/(.*)", "destination": "/css/$1" },
+    { "source": "/fonts/(.*)", "destination": "/fonts/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

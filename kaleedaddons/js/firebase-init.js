@@ -1,5 +1,5 @@
-
 import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 console.log("جاري تهيئة Firebase...");
 
@@ -13,7 +13,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 console.log("تم تهيئة Firebase بنجاح!");
 
-export default app;
+export { app, db };

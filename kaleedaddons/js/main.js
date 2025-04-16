@@ -4,10 +4,10 @@ function addLinkField() {
     console.log("جاري إضافة حقل رابط...");
     const container = document.getElementById('links-container');
     const div = document.createElement('div');
-    div.innerHTML = 
+    div.innerHTML = `
         <input type="text" class="link-name" placeholder="اسم الرابط">
         <input type="url" class="link-url" placeholder="رابط التحميل">
-    ;
+    `;
     container.appendChild(div);
 }
 
@@ -29,22 +29,22 @@ document.getElementById('addon-form').addEventListener('submit', (e) => {
         thumbnail: '',
         links
     }).then(() => {
-        console.log("تم إضافة المود بنجاح!");
+        console.log("تم إضافة المود!");
         alert('تم إضافة المود!');
         document.getElementById('addon-form').reset();
-        document.getElementById('links-container').innerHTML = 
+        document.getElementById('links-container').innerHTML = `
             <input type="text" class="link-name" placeholder="اسم الرابط">
             <input type="url" class="link-url" placeholder="رابط التحميل">
-        ;
+        `;
         loadAddons();
     }).catch(error => {
-        console.error('خطأ أثناء إضافة المود:', error);
+        console.error('خطأ:', error);
         alert('حدث خطأ: ' + error.message);
     });
 });
 
 function loadAddons() {
-    console.log("جاري تحميل المودات في admin...");
+    console.log("جاري تحميل المودات...");
     const addonsList = document.getElementById('admin-addons-list');
     addonsList.innerHTML = '';
     const db = firebase.firestore();
@@ -54,17 +54,17 @@ function loadAddons() {
         } else {
             querySnapshot.forEach((doc) => {
                 const addon = doc.data();
-                addonsList.innerHTML += 
+                addonsList.innerHTML += `
                     <div class="addon-card">
                         <h3>${addon.title}</h3>
                         <p>${addon.description}</p>
                         <button onclick="deleteAddon('${doc.id}')">حذف</button>
                     </div>
-                ;
+                `;
             });
         }
     }).catch(error => {
-        console.error('خطأ أثناء تحميل المودات:', error);
+        console.error('خطأ:', error);
     });
 }
 
@@ -72,12 +72,12 @@ function deleteAddon(id) {
     if (confirm('هل أنت متأكد؟')) {
         const db = firebase.firestore();
         db.collection('addons').doc(id).delete().then(() => {
-            console.log("تم حذف المود!");
+            console.log("تم الحذف!");
             alert('تم الحذف!');
             loadAddons();
         }).catch(error => {
-            console.error('خطأ أثناء الحذف:', error);
-            alert('حدث خطأ: ' + error.message);
+            console.error('خطأ:', error);
+            alert('حدث خطأ.');
         });
     }
 }

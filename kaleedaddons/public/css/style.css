@@ -1,0 +1,55 @@
+body {
+    font-family: 'Minecraft Regular', Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+@font-face {
+    font-family: 'Minecraft Regular';
+    src: url('/kaleedaddons/fonts/minecraft-regular-1-1.ttf') format('truetype');
+}
+h1, h2, h3 {
+    color: #00ff00;
+}
+a.button, button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #555;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+}
+a.button:hover, button:hover {
+    background-color: #777;
+}
+.addon-card {
+    background-color: #333;
+    padding: 20px;
+    margin: 10px auto;
+    max-width: 600px;
+    border-radius: 5px;
+}
+form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+textarea {
+    height: 100px;
+}

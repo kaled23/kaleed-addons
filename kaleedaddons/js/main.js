@@ -1,6 +1,9 @@
+import { db } from "./firebase-init.js";
+import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
+
 console.log("تم تحميل main.js");
 
-function addLinkField() {
+export function addLinkField() {
     console.log("إضافة حقل رابط...");
     const container = document.getElementById('links-container');
     const div = document.createElement('div');
@@ -11,7 +14,7 @@ function addLinkField() {
     container.appendChild(div);
 }
 
-document.getElementById('addon-form').addEventListener('submit', (e) => {
+document.getElementById('addon-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     console.log("جاري إرسال المود...");
     try {
@@ -25,31 +28,23 @@ document.getElementById('addon-form').addEventListener('submit', (e) => {
 
         console.log("البيانات:", { title, description, links });
 
-        if (!firebase.firestore) {
-            throw new Error("Firestore غير مهيأ!");
-        }
-
-        const db = firebase.firestore();
-        db.collection('addons').add({
+        await addDoc(collection(db, 'addons'), {
             title: title || "مود بدون عنوان",
             description: description || "بدون وصف",
             thumbnail: '',
             links: links.length ? links : [{ name: "بدون رابط", url: "https://example.com" }],
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            console.log("نجاح: تم إضافة المود!");
-            alert("تم إضافة المود!");
-            document.getElementById('addon-form').reset();
-            document.getElementById('links-container').innerHTML = `
-                <input type="text" class="link-name" placeholder="اسم الرابط">
-                <input type="url" class="link-url" placeholder="رابط التحميل">
-            `;
-        }).catch(error => {
-            console.error("فشل إضافة المود:", error.message);
-            alert("خطأ: " + error.message);
+            createdAt: serverTimestamp()
         });
+
+        console.log("نجاح: تم إضافة المود!");
+        alert("تم إضافة المود!");
+        document.getElementById('addon-form').reset();
+        document.getElementById('links-container').innerHTML = `
+            <input type="text" class="link-name" placeholder="اسم الرابط">
+            <input type="url" class="link-url" placeholder="رابط التحميل">
+        `;
     } catch (error) {
-        console.error("خطأ في إرسال المود:", error.message);
+        console.error("خطأ في إضافة المود:", error.message);
         alert("خطأ: " + error.message);
     }
 });

@@ -25,7 +25,14 @@
     <section id="admin-addons-list"></section>
     <script type="module">
         import { addLinkField } from '/js/main.js';
-        document.getElementById('add-link-btn').addEventListener('click', addLinkField);
+        console.log("جاري تهيئة زر إضافة رابط...");
+        const addLinkBtn = document.getElementById('add-link-btn');
+        if (addLinkBtn) {
+            addLinkBtn.addEventListener('click', addLinkField);
+            console.log("تم تهيئة زر إضافة رابط!");
+        } else {
+            console.error("زر إضافة رابط غير موجود!");
+        }
     </script>
 </body>
 </html>

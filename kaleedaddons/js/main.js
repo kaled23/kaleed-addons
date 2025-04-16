@@ -1,6 +1,6 @@
 console.log("تم تحميل main.js");
 
-// وظيفة آمنة لإنشاء عناصر HTML
+ 
 function createInputElement(type, className, placeholder) {
     const input = document.createElement('input');
     input.type = type;

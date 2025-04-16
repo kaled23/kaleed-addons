@@ -4,14 +4,22 @@ import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "fi
 console.log("تم تحميل main.js");
 
 export function addLinkField() {
-    console.log("إضافة حقل رابط...");
-    const container = document.getElementById('links-container');
-    const div = document.createElement('div');
-    div.innerHTML = `
-        <input type="text" class="link-name" placeholder="اسم الرابط">
-        <input type="url" class="link-url" placeholder="رابط التحميل">
-    `;
-    container.appendChild(div);
+    console.log("جاري إضافة حقل رابط...");
+    try {
+        const container = document.getElementById('links-container');
+        if (!container) {
+            throw new Error("links-container غير موجود!");
+        }
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <input type="text" class="link-name" placeholder="اسم الرابط">
+            <input type="url" class="link-url" placeholder="رابط التحميل">
+        `;
+        container.appendChild(div);
+        console.log("تم إضافة حقل رابط!");
+    } catch (error) {
+        console.error("خطأ في إضافة حقل رابط:", error.message);
+    }
 }
 
 document.getElementById('addon-form').addEventListener('submit', async (e) => {

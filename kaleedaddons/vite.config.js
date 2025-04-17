@@ -12,5 +12,8 @@ export default defineConfig({
                 addons: 'public/addons.html'
             }
         }
+    },
+    esbuild: {
+        include: ['public/**/*.js', 'src/**/*.js']
     }
 });

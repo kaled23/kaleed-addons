@@ -1,58 +1,63 @@
-import { db } from './firebase-init.js';
-import { collection, addDoc } from 'firebase/firestore';
+import { db } from "./firebase-init.js";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-const form = document.getElementById('addon-form');
-const addLinkBtn = document.getElementById('add-link');
-const linksContainer = document.getElementById('links-container');
+console.log("تم تحميل main.js");
 
-
-addLinkBtn.addEventListener('click', () => {
-  const linkGroup = document.createElement('div');
-  linkGroup.classList.add('link-group');
-  linkGroup.innerHTML = 
-    <input type="text" class="link-name" placeholder="اسم الرابط">
-    <input type="url" class="link-url" placeholder="رابط التحميل">
-  ;
-  linksContainer.appendChild(linkGroup);
-});
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const title = document.getElementById('title').value.trim();
-  const description = document.getElementById('description').value.trim();
-
-  const linkNames = document.querySelectorAll('.link-name');
-  const linkUrls = document.querySelectorAll('.link-url');
-  const links = [];
-
-  for (let i = 0; i < linkNames.length; i++) {
-    const name = linkNames[i].value.trim();
-    const url = linkUrls[i].value.trim();
-    if (name && url) {
-      links.push({ name, url });
+export function addLinkField() {
+    console.log("جاري إضافة حقل رابط...");
+    try {
+        const container = document.getElementById('links-container');
+        if (!container) {
+            throw new Error("links-container غير موجود!");
+        }
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <input type="text" class="link-name" placeholder="اسم الرابط">
+            <input type="url" class="link-url" placeholder="رابط التحميل">
+        `;
+        container.appendChild(div);
+        console.log("تم إضافة حقل رابط!");
+    } catch (error) {
+        console.error("خطأ في إضافة حقل رابط:", error.message);
     }
-  }
+}
 
-  try {
-    await addDoc(collection(db, 'addons'), {
-      title,
-      description,
-      links,
-      createdAt: new Date()
+const addonForm = document.getElementById('addon-form');
+if (addonForm) {
+    addonForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log("جاري إرسال المود...");
+        try {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const links = [];
+            document.querySelectorAll('.link-name').forEach((name, i) => {
+                const url = document.querySelectorAll('.link-url')[i].value;
+                if (name.value && url) links.push({ name: name.value, url });
+            });
+
+            console.log("البيانات:", { title, description, links });
+
+            await addDoc(collection(db, 'addons'), {
+                title: title || "مود بدون عنوان",
+                description: description || "بدون وصف",
+                thumbnail: '',
+                links: links.length ? links : [{ name: "بدون رابط", url: "https://example.com" }],
+                createdAt: serverTimestamp()
+            });
+
+            console.log("نجاح: تم إضافة المود!");
+            alert("تم إضافة المود!");
+            addonForm.reset();
+            document.getElementById('links-container').innerHTML = `
+                <input type="text" class="link-name" placeholder="اسم الرابط">
+                <input type="url" class="link-url" placeholder="رابط التحميل">
+            `;
+        } catch (error) {
+            console.error("خطأ في إضافة المود:", error.message);
+            alert("خطأ: " + error.message);
+        }
     });
-
-    alert('تمت إضافة المود بنجاح!');
-    form.reset();
-    linksContainer.innerHTML = 
-      <div class="link-group">
-        <input type="text" class="link-name" placeholder="اسم الرابط">
-        <input type="url" class="link-url" placeholder="رابط التحميل">
-      </div>
-    ;
-
-  } catch (error) {
-    console.error('خطأ في الإضافة:', error.message);
-    alert('فشل في الإضافة، حاول مرة أخرى.');
-  }
-});
+} else {
+    console.error("addon-form غير موجود!");
+}

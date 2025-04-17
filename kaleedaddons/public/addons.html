@@ -10,20 +10,20 @@
     <h1>الإضافات</h1>
     <section id="addons-list"></section>
     <script type="module">
-        import { db } from '/js/firebase-init.js';
+        import { db } from '../src/js/firebase-init.js';
         import { collection, getDocs } from 'firebase/firestore';
 
-        console.log("تم تحميل addons.html");
+        console.log("جاري تحميل addons.html...");
         try {
             const querySnapshot = await getDocs(collection(db, 'addons'));
             const addonsList = document.getElementById('addons-list');
             if (querySnapshot.empty) {
-                console.log("لا توجد مودات!");
+                console.log("لا توجد مودات في Firestore!");
                 addonsList.innerHTML = "<p>لا توجد إضافات حاليًا.</p>";
             } else {
                 querySnapshot.forEach((doc) => {
                     const addon = doc.data();
-                    console.log("مود:", addon.title);
+                    console.log("مود تم تحميله:", addon.title);
                     addonsList.innerHTML += `
                         <div class="addon-card">
                             <h3>${addon.title}</h3>
@@ -40,7 +40,7 @@
             }
         } catch (error) {
             console.error("خطأ في تحميل المودات:", error.message);
-            addonsList.innerHTML = "<p>حدث خطأ.</p>";
+            document.getElementById('addons-list').innerHTML = "<p>حدث خطأ أثناء تحميل الإضافات.</p>";
         }
     </script>
 </body>

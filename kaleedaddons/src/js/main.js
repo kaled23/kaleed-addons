@@ -1,10 +1,11 @@
 import { db } from './firebase-init.js';
 import { collection, addDoc } from 'firebase/firestore';
 
-
+const form = document.getElementById('addon-form');
 const addLinkBtn = document.getElementById('add-link');
 const linksContainer = document.getElementById('links-container');
 
+// زر "إضافة رابط آخر"
 addLinkBtn.addEventListener('click', () => {
   const linkGroup = document.createElement('div');
   linkGroup.classList.add('link-group');
@@ -15,9 +16,7 @@ addLinkBtn.addEventListener('click', () => {
   linksContainer.appendChild(linkGroup);
 });
 
-
-const form = document.getElementById('addon-form');
-
+// إرسال النموذج
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -26,7 +25,6 @@ form.addEventListener('submit', async (e) => {
 
   const linkNames = document.querySelectorAll('.link-name');
   const linkUrls = document.querySelectorAll('.link-url');
-
   const links = [];
 
   for (let i = 0; i < linkNames.length; i++) {
@@ -47,16 +45,15 @@ form.addEventListener('submit', async (e) => {
 
     alert('تمت إضافة المود بنجاح!');
     form.reset();
-    
-    const extraLinks = document.querySelectorAll('.link-group');
-    if (extraLinks.length > 1) {
-      for (let i = 1; i < extraLinks.length; i++) {
-        extraLinks[i].remove();
-      }
-    }
+    linksContainer.innerHTML = 
+      <div class="link-group">
+        <input type="text" class="link-name" placeholder="اسم الرابط">
+        <input type="url" class="link-url" placeholder="رابط التحميل">
+      </div>
+    ;
 
   } catch (error) {
-    console.error('حدث خطأ أثناء الإضافة:', error.message);
-    alert('فشل في إضافة المود، حاول مرة أخرى.');
+    console.error('خطأ في الإضافة:', error.message);
+    alert('فشل في الإضافة، حاول مرة أخرى.');
   }
 });

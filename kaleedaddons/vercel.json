@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/addons", "destination": "public/addons.html" },
-    { "source": "/admin", "destination": "public/admin.html" }
+    { "source": "/addons", "destination": "/addons.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }

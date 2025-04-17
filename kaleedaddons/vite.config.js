@@ -12,7 +12,6 @@ export default defineConfig({
                 addons: 'public/addons.html'
             },
             output: {
-                
                 entryFileNames: 'js/[name].js',
                 chunkFileNames: 'js/[name].js',
                 assetFileNames: 'assets/[name].[ext]'
@@ -21,7 +20,6 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            
             '/js': '/src/js'
         }
     }

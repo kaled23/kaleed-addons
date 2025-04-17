@@ -4,19 +4,20 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 console.log("تم تحميل main.js");
 
 export function addLinkField() {
-    console.log("جاري إضافة حقل رابط...");
+    console.log("جاري تنفيذ addLinkField...");
     try {
         const container = document.getElementById('links-container');
         if (!container) {
-            throw new Error("links-container غير موجود!");
+            throw new Error("links-container غير موجود في DOM!");
         }
         const div = document.createElement('div');
+        div.className = 'link-group';
         div.innerHTML = `
             <input type="text" class="link-name" placeholder="اسم الرابط">
             <input type="url" class="link-url" placeholder="رابط التحميل">
         `;
         container.appendChild(div);
-        console.log("تم إضافة حقل رابط!");
+        console.log("تم إضافة حقل رابط جديد بنجاح!");
     } catch (error) {
         console.error("خطأ في إضافة حقل رابط:", error.message);
     }
@@ -24,6 +25,7 @@ export function addLinkField() {
 
 const addonForm = document.getElementById('addon-form');
 if (addonForm) {
+    console.log("تم العثور على addon-form، جاري تهيئة الـ submit...");
     addonForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         console.log("جاري إرسال المود...");
@@ -33,10 +35,16 @@ if (addonForm) {
             const links = [];
             document.querySelectorAll('.link-name').forEach((name, i) => {
                 const url = document.querySelectorAll('.link-url')[i].value;
-                if (name.value && url) links.push({ name: name.value, url });
+                if (name.value && url) {
+                    links.push({ name: name.value, url });
+                }
             });
 
-            console.log("البيانات:", { title, description, links });
+            console.log("البيانات المرسلة:", { title, description, links });
+
+            if (!db) {
+                throw new Error("Firestore db غير مهيأ!");
+            }
 
             await addDoc(collection(db, 'addons'), {
                 title: title || "مود بدون عنوان",
@@ -46,8 +54,8 @@ if (addonForm) {
                 createdAt: serverTimestamp()
             });
 
-            console.log("نجاح: تم إضافة المود!");
-            alert("تم إضافة المود!");
+            console.log("نجاح: تم إضافة المود إلى Firestore!");
+            alert("تم إضافة المود بنجاح!");
             addonForm.reset();
             document.getElementById('links-container').innerHTML = `
                 <input type="text" class="link-name" placeholder="اسم الرابط">
@@ -55,9 +63,9 @@ if (addonForm) {
             `;
         } catch (error) {
             console.error("خطأ في إضافة المود:", error.message);
-            alert("خطأ: " + error.message);
+            alert("خطأ في إضافة المود: " + error.message);
         }
     });
 } else {
-    console.error("addon-form غير موجود!");
+    console.error("خطأ: addon-form غير موجود في DOM!");
 }

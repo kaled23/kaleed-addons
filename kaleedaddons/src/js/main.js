@@ -5,7 +5,7 @@ const form = document.getElementById('addon-form');
 const addLinkBtn = document.getElementById('add-link');
 const linksContainer = document.getElementById('links-container');
 
-// زر "إضافة رابط آخر"
+
 addLinkBtn.addEventListener('click', () => {
   const linkGroup = document.createElement('div');
   linkGroup.classList.add('link-group');
@@ -16,7 +16,6 @@ addLinkBtn.addEventListener('click', () => {
   linksContainer.appendChild(linkGroup);
 });
 
-// إرسال النموذج
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 

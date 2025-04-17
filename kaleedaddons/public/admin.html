@@ -3,42 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الإضافات - Kaleed Add-Ons</title>
+    <title>الإضافات - Kaleed Add-Ons</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>إدارة الإضافات</h1>
-    <form id="addon-form">
-        <label>العنوان:</label>
-        <input type="text" id="title" required>
-        <label>الوصف:</label>
-        <textarea id="description" required></textarea>
-        <label>الروابط (اسم: رابط):</label>
-        <div id="links-container">
-            <input type="text" class="link-name" placeholder="اسم الرابط">
-            <input type="url" class="link-url" placeholder="رابط التحميل">
-        </div>
-        <button type="button" id="add-link-btn">إضافة رابط آخر</button>
-        <button type="submit">إضافة المود</button>
-    </form>
-    <h2>الإضافات الحالية</h2>
-    <section id="admin-addons-list"></section>
+    <h1>الإضافات</h1>
+    <section id="addons-list"></section>
     <script type="module">
-        import { addLinkField } from '../src/js/main.js';
-        console.log("جاري تهيئة admin.html...");
+        import { db } from '../src/js/firebase-init.js';
+        import { collection, getDocs } from 'firebase/firestore';
+
+        console.log("جاري تحميل addons.html...");
         try {
-            const addLinkBtn = document.getElementById('add-link-btn');
-            if (addLinkBtn) {
-                addLinkBtn.addEventListener('click', () => {
-                    console.log("تم النقر على زر إضافة رابط آخر");
-                    addLinkField();
-                });
-                console.log("تم تهيئة زر إضافة رابط!");
+            const querySnapshot = await getDocs(collection(db, 'addons'));
+            const addonsList = document.getElementById('addons-list');
+            if (querySnapshot.empty) {
+                console.log("لا توجد مودات في Firestore!");
+                addonsList.innerHTML = "<p>لا توجد إضافات حاليًا.</p>";
             } else {
-                console.error("خطأ: زر إضافة رابط (add-link-btn) غير موجود!");
+                querySnapshot.forEach((doc) => {
+                    const addon = doc.data();
+                    console.log("مود تم تحميله:", addon.title);
+                    addonsList.innerHTML += `
+                        <div class="addon-card">
+                            <h3>${addon.title}</h3>
+                            <p>${addon.description}</p>
+                            <div>
+                                <strong>الروابط:</strong>
+                                <ul>
+                                    ${addon.links ? addon.links.map(link => `<li><a href="${link.url}" target="_blank">${link.name}</a></li>`).join('') : 'لا توجد روابط'}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                });
             }
         } catch (error) {
-            console.error("خطأ في تهيئة زر إضافة رابط:", error.message);
+            console.error("خطأ في تحميل المودات:", error.message);
+            document.getElementById('addons-list').innerHTML = "<p>حدث خطأ أثناء تحميل الإضافات.</p>";
         }
     </script>
 </body>

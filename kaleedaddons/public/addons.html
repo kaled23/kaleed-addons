@@ -1,31 +1,58 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>إدارة الإضافات</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>الإضافات - Kaleed Add-Ons</title>
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <h1>إدارة الإضافات</h1>
-  <form id="addon-form">
-    <label>العنوان:</label>
-    <input type="text" id="title" required>
+  <h1>الإضافات</h1>
+  <section id="addons-list"></section>
 
-    <label>الوصف:</label>
-    <textarea id="description" required></textarea>
+  <script type="module">
+    import { db } from '/js/firebase-init.js';
+    import { collection, getDocs } from 'firebase/firestore';
 
-    <label>الروابط:</label>
-    <div id="links-container">
-      <div class="link-group">
-        <input type="text" class="link-name" placeholder="اسم الرابط">
-        <input type="url" class="link-url" placeholder="رابط التحميل">
-      </div>
-    </div>
+    async function loadAddons() {
+      const addonsList = document.getElementById('addons-list');
+      addonsList.innerHTML = "<p>جارٍ التحميل...</p>";
 
-    <button type="button" id="add-link">إضافة رابط آخر</button>
-    <button type="submit">إضافة المود</button>
-  </form>
+      try {
+        const querySnapshot = await getDocs(collection(db, 'addons'));
 
-  <script type="module" src="/js/main.js"></script>
+        if (querySnapshot.empty) {
+          addonsList.innerHTML = "<p>لا توجد إضافات حاليًا.</p>";
+          return;
+        }
+
+        addonsList.innerHTML = "";
+
+        querySnapshot.forEach((doc) => {
+          const addon = doc.data();
+          const links = addon.links || [];
+
+          const linksHtml = links.length > 0
+            ? <ul>${links.map(link => <li><a href="${link.url}" target="_blank">${link.name}</a></li>).join('')}</ul>
+            : '<p>لا توجد روابط.</p>';
+
+          const addonCard = document.createElement('div');
+          addonCard.classList.add('addon-card');
+          addonCard.innerHTML = 
+            <h3>${addon.title}</h3>
+            <p>${addon.description}</p>
+            <div><strong>الروابط:</strong> ${linksHtml}</div>
+          ;
+          addonsList.appendChild(addonCard);
+        });
+
+      } catch (error) {
+        console.error("خطأ في تحميل الإضافات:", error.message);
+        addonsList.innerHTML = "<p>حدث خطأ أثناء تحميل الإضافات.</p>";
+      }
+    }
+
+    loadAddons();
+  </script>
 </body>
-</html> 
+</html>

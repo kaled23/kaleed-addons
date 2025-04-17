@@ -3,78 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إضافة مود جديد - Kaleed Add-Ons</title>
+    <title>الإضافات - Kaleed Add-Ons</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <h1>إضافة مود جديد</h1>
-    <form id="new-addon-form">
-        <label for="addon-title">العنوان:</label>
-        <input type="text" id="addon-title" placeholder="أدخل عنوان المود" required>
-        
-        <label for="addon-description">الوصف:</label>
-        <textarea id="addon-description" placeholder="أدخل وصف المود" required></textarea>
-        
-        <label>روابط التحميل:</label>
-        <div id="link-fields">
-            <div class="link-field">
-                <input type="text" class="link-name" placeholder="اسم الرابط">
-                <input type="url" class="link-url" placeholder="رابط التحميل">
-            </div>
-        </div>
-        <button type="button" id="add-link-btn">إضافة رابط آخر</button>
-        
-        <button type="submit">إضافة المود</button>
-    </form>
-    
+    <h1>الإضافات</h1>
+    <section id="addons-list"></section>
     <script type="module">
-        import { db } from "/js/firebase-init.js";
-        import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+        import { db } from '/js/firebase-init.js';
+        import { collection, getDocs } from 'firebase/firestore';
 
-        // 
-        document.getElementById('add-link-btn').addEventListener('click', () => {
-            const linkFields = document.getElementById('link-fields');
-            const newField = document.createElement('div');
-            newField.classList.add('link-field');
-            newField.innerHTML = `
-                <input type="text" class="link-name" placeholder="اسم الرابط">
-                <input type="url" class="link-url" placeholder="رابط التحميل">
-            `;
-            linkFields.appendChild(newField);
-        });
-
-        // 
-        document.getElementById('new-addon-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            
-            const title = document.getElementById('addon-title').value.trim();
-            const description = document.getElementById('addon-description').value.trim();
-            const links = Array.from(document.querySelectorAll('.link-field')).map(field => {
-                const name = field.querySelector('.link-name').value.trim();
-                const url = field.querySelector('.link-url').value.trim();
-                return { name, url };
-            }).filter(link => link.name && link.url);
-
-            try {
-                await addDoc(collection(db, "addons"), {
-                    title,
-                    description,
-                    links,
-                    createdAt: serverTimestamp()
+        console.log("تم تحميل addons.html");
+        try {
+            const querySnapshot = await getDocs(collection(db, 'addons'));
+            const addonsList = document.getElementById('addons-list');
+            if (querySnapshot.empty) {
+                console.log("لا توجد مودات!");
+                addonsList.innerHTML = "<p>لا توجد إضافات حاليًا.</p>";
+            } else {
+                querySnapshot.forEach((doc) => {
+                    const addon = doc.data();
+                    console.log("مود:", addon.title);
+                    addonsList.innerHTML += `
+                        <div class="addon-card">
+                            <h3>${addon.title}</h3>
+                            <p>${addon.description}</p>
+                            <div>
+                                <strong>الروابط:</strong>
+                                <ul>
+                                    ${addon.links ? addon.links.map(link => `<li><a href="${link.url}" target="_blank">${link.name}</a></li>`).join('') : 'لا توجد روابط'}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
                 });
-                alert("تم إضافة المود بنجاح!");
-                document.getElementById('new-addon-form').reset();
-                document.getElementById('link-fields').innerHTML = `
-                    <div class="link-field">
-                        <input type="text" class="link-name" placeholder="اسم الرابط">
-                        <input type="url" class="link-url" placeholder="رابط التحميل">
-                    </div>
-                `;
-            } catch (error) {
-                console.error("حدث خطأ أثناء إضافة المود:", error);
-                alert("حدث خطأ أثناء إضافة المود. حاول مرة أخرى.");
             }
-        });
+        } catch (error) {
+            console.error("خطأ في تحميل المودات:", error.message);
+            addonsList.innerHTML = "<p>حدث خطأ.</p>";
+        }
     </script>
 </body>
 </html>

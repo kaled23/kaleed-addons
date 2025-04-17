@@ -25,13 +25,20 @@
     <section id="admin-addons-list"></section>
     <script type="module">
         import { addLinkField } from '/js/main.js';
-        console.log("جاري تهيئة زر إضافة رابط...");
-        const addLinkBtn = document.getElementById('add-link-btn');
-        if (addLinkBtn) {
-            addLinkBtn.addEventListener('click', addLinkField);
-            console.log("تم تهيئة زر إضافة رابط!");
-        } else {
-            console.error("زر إضافة رابط غير موجود!");
+        console.log("جاري تهيئة admin.html...");
+        try {
+            const addLinkBtn = document.getElementById('add-link-btn');
+            if (addLinkBtn) {
+                addLinkBtn.addEventListener('click', () => {
+                    console.log("تم النقر على زر إضافة رابط آخر");
+                    addLinkField();
+                });
+                console.log("تم تهيئة زر إضافة رابط!");
+            } else {
+                console.error("خطأ: زر إضافة رابط (add-link-btn) غير موجود!");
+            }
+        } catch (error) {
+            console.error("خطأ في تهيئة زر إضافة رابط:", error.message);
         }
     </script>
 </body>

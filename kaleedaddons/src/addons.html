@@ -9,39 +9,50 @@
 <body>
     <h1>الإضافات</h1>
     <section id="addons-list"></section>
+
     <script type="module">
         import { db } from '/js/firebase-init.js';
         import { collection, getDocs } from 'firebase/firestore';
 
-        console.log("تم تحميل addons.html");
-        try {
-            const querySnapshot = await getDocs(collection(db, 'addons'));
+        async function loadAddons() {
+            console.log("جاري تحميل الإضافات...");
             const addonsList = document.getElementById('addons-list');
-            if (querySnapshot.empty) {
-                console.log("لا توجد مودات!");
-                addonsList.innerHTML = "<p>لا توجد إضافات حاليًا.</p>";
-            } else {
+
+            try {
+                const querySnapshot = await getDocs(collection(db, 'addons'));
+
+                if (querySnapshot.empty) {
+                    console.log("لا توجد مودات!");
+                    addonsList.innerHTML = "<p>لا توجد إضافات حاليًا.</p>";
+                    return;
+                }
+
                 querySnapshot.forEach((doc) => {
                     const addon = doc.data();
-                    console.log("مود:", addon.title);
-                    addonsList.innerHTML += `
+                    const linksHTML = addon.links
+                        ? addon.links.map(link => <li><a href="${link.url}" target="_blank">${link.name}</a></li>).join('')
+                        : 'لا توجد روابط';
+
+                    const addonHTML = 
                         <div class="addon-card">
-                            <h3>${addon.title}</h3>
+                            <h3>${addon.name}</h3>
                             <p>${addon.description}</p>
                             <div>
                                 <strong>الروابط:</strong>
-                                <ul>
-                                    ${addon.links ? addon.links.map(link => `<li><a href="${link.url}" target="_blank">${link.name}</a></li>`).join('') : 'لا توجد روابط'}
-                                </ul>
+                                <ul>${linksHTML}</ul>
                             </div>
                         </div>
-                    `;
+                    ;
+                    addonsList.innerHTML += addonHTML;
                 });
+
+            } catch (error) {
+                console.error("خطأ في تحميل المودات:", error.message);
+                addonsList.innerHTML = "<p>حدث خطأ أثناء تحميل المودات.</p>";
             }
-        } catch (error) {
-            console.error("خطأ في تحميل المودات:", error.message);
-            addonsList.innerHTML = "<p>حدث خطأ.</p>";
         }
+
+        loadAddons();
     </script>
 </body>
 </html>

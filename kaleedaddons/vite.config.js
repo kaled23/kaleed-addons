@@ -13,5 +13,5 @@ export default defineConfig({
       }
     }
   },
-  publicDir: '../public/css'
+  publicDir: '../public'
 });
